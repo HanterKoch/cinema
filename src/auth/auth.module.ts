@@ -9,7 +9,7 @@ import { getJWTConfig } from 'config/JWT.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   imports: [
     TypegooseModule.forFeature([
         {
@@ -26,6 +26,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         useFactory: getJWTConfig
     })
   ],
-  controllers: [AuthController, JwtStrategy]
+  controllers: [AuthController]
 })
 export class AuthModule {}

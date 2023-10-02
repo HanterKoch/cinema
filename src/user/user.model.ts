@@ -4,8 +4,8 @@ import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses"
 export interface UserModule extends Base{}
 
 export class UserModel extends TimeStamps{
-    @Prop()
-    _id: string
+    @prop()
+    _id
     @prop({unique: true})
     email: string
     @prop()
