@@ -12,4 +12,11 @@ export class AuthController {
     async register(@Body() dto: AuthDto){
         return this.AuthService.register(dto)
     }
+
+    @UsePipes(new ValidationPipe())
+    @HttpCode(200)
+    @Post('login')
+    async login(@Body() dto: AuthDto){
+        return this.AuthService.login(dto) 
+    }
 }
