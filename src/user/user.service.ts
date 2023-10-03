@@ -3,7 +3,7 @@ import { UserModel } from './user.model';
 import { InjectModel } from 'nestjs-typegoose';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { NotFoundError } from 'rxjs';
-import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { genSalt, hash } from 'bcryptjs';
 
 @Injectable()
@@ -30,5 +30,28 @@ export class UserService {
         if(dto.isAdmin || dto.isAdmin == false)
             user.isAdmin = dto.isAdmin
         await user.save()
+    }
+
+    async getCount(){
+        return this.UserModel.find().count().exec()
+    }
+
+    async getAll(searchTerm?:string){
+        let options = {}
+        if(searchTerm)
+            options = {
+                $or: [
+                    {
+                        email: new RegExp(searchTerm, 'i')
+                    }
+                ]
+            }
+        return this.UserModel.find(options).select('-password -updatedAt -__v').sort({
+            createdAt: 'desc'
+        }).exec()
+    }
+
+    async delete(id:string){
+        return this.UserModel.findByIdAndDelete(id).exec()
     }
 }

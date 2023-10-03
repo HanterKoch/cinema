@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpCode, Param, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { User } from './decorators/user.decorator';
-import { UpdateUserDto } from 'src/auth/dto/update-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { IdValidationPipe } from 'src/pipes/id.validation.pipe';
 
 @Controller('users')
@@ -14,6 +14,24 @@ export class UserController {
     @Auth()
     async getProfile(@User('_id') _id:string){
         return this.userService.byId(_id)
+    }
+
+    @Get('count')
+    @Auth('admin')
+    async getCountUsers(@User('_id') _id:string){
+        return this.userService.getCount()
+    }
+
+    @Get()
+    @Auth('admin')
+    async getUsers(@Query('searchTerm') searchTerm?:string){
+        return this.userService.getAll(searchTerm)
+    }
+
+    @Get(':id')
+    @Auth('admin')
+    async getUser(@Param('id', IdValidationPipe) id: string){
+        return this.userService.byId(id)
     }
 
     @UsePipes(new ValidationPipe())
@@ -28,7 +46,14 @@ export class UserController {
     @Put(':id')
     @HttpCode(200)
     @Auth('admin')
-    async updateUser(@Param('_id', IdValidationPipe) _id: string, @Body() dto: UpdateUserDto){
-        return this.userService.updateProfile(_id, dto)
+    async updateUser(@Param('id', IdValidationPipe) id: string, @Body() dto: UpdateUserDto){
+        return this.userService.updateProfile(id, dto)
+    }
+
+    @Delete(':id')
+    @HttpCode(200)
+    @Auth('admin')
+    async deleteUser(@Param('id', IdValidationPipe) id: string){
+        return this.userService.delete(id)
     }
 }
